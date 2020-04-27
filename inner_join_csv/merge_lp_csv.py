@@ -10,8 +10,8 @@ from argparse import ArgumentParser
 
 def compute_earth_distance(lat1, lon1, lat2, lon2):
     """Compute distance between two earth points
-    
-    This function computes distance between two points on the earth using the 
+
+    This function computes distance between two points on the earth using the
     Haversine formula
     :lat1: First latitude
     :lon1: First longitude
@@ -88,29 +88,29 @@ def merge_records(table_1, table_2):
 
 def write_to_csv(merged_records, file_path):
     """Function to write merged records to a CSV file
-  
+
     :merged_records: dictionary of merged records
     :file_path: Path to the output CSV file to be created
     """
 
-    with open(file_path, 'w') as f:
+    def add_key(key, value):
+        value.update({'id': key})
+        return value
+
+    table = [add_key(key, value) for key, value in merged_records.items()]
+
+    with open(file_path, 'w') as output_file:
         writer = csv.DictWriter(
-            f,
-            fieldnames=['id', 'lat_1', 'lon_1', 'lat_2', 'lon_2', 'distance'],
+            output_file,
+            fieldnames=[
+                'id',
+                'lat_1',
+                'lon_1',
+                'lat_2',
+                'lon_2',
+                'distance_sq_m',
+            ],
         )
-
-        table = []
-        for key, value in merged_records.items():
-            row = {
-                'id': key,
-                'lat_1': value['lat_1'],
-                'lon_1': value['lon_1'],
-                'lat_2': value['lat_2'],
-                'lon_2': value['lon_2'],
-                'distance': value['distance_sq_m'],
-            }
-
-            table.append(row)
 
         writer.writeheader()
         writer.writerows(table)
